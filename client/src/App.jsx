@@ -37,8 +37,8 @@ const RATINGS = {
     badge: "text-green-400 border-green-900/50 bg-green-900/20", // Green palette
     text: "text-green-400",
   },
-  PERFECTION: {
-    label: "PERFECTION",
+  Lisan_al_Gaib: {
+    label: "Lisan al-Gaib",
     badge: "text-amber-400 border-amber-900/50 bg-amber-900/20", // Gold/Amber palette
     text: "text-amber-400",
   },
