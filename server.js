@@ -7,30 +7,25 @@ import { fileURLToPath } from 'url';
 // --- CONFIGURATION ---
 const app = express();
 const PORT = process.env.PORT || 3001;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123"; // Default password (change in env)
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
 // Database Connection (Postgres)
 const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Required for Neon/Render
+  ssl: { rejectUnauthorized: false }
 });
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Serve Frontend Static Files
+// --- SERVE STATIC FILES (Frontend Assets) ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// YAHAN CHANGE HAI: 'dist' ki jagah 'client', 'dist'
+// Ye line assets (JS/CSS) serve karegi
 app.use(express.static(path.join(__dirname, 'client', 'dist')));
-
-// Catch-all route mein bhi change:
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
-});
 
 // --- AUTH MIDDLEWARE ---
 const requireAuth = (req, res, next) => {
@@ -69,9 +64,9 @@ const initDB = async () => {
 };
 initDB();
 
-// --- API ROUTES ---
+// --- API ROUTES (Ye pehle aane chahiye) ---
 
-// GET all logs (Protected)
+// GET all logs
 app.get('/api/logs', requireAuth, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM logs ORDER BY date_watched DESC, created_at DESC');
@@ -81,7 +76,7 @@ app.get('/api/logs', requireAuth, async (req, res) => {
     }
 });
 
-// POST new log (Protected)
+// POST new log
 app.post('/api/logs', requireAuth, async (req, res) => {
     const { title, type, release_year, rating, date_watched, is_rewatch, season, episode, notes, status, total_episodes } = req.body;
     
@@ -97,7 +92,7 @@ app.post('/api/logs', requireAuth, async (req, res) => {
     }
 });
 
-// PUT (Update) existing log (Protected)
+// PUT (Update) existing log
 app.put('/api/logs/:id', requireAuth, async (req, res) => {
     const { title, type, release_year, rating, date_watched, is_rewatch, season, episode, notes, status, total_episodes } = req.body;
     const { id } = req.params;
@@ -117,7 +112,7 @@ app.put('/api/logs/:id', requireAuth, async (req, res) => {
     }
 });
 
-// DELETE log (Protected)
+// DELETE log
 app.delete('/api/logs/:id', requireAuth, async (req, res) => {
     try {
         await pool.query('DELETE FROM logs WHERE id = $1', [req.params.id]);
@@ -127,7 +122,7 @@ app.delete('/api/logs/:id', requireAuth, async (req, res) => {
     }
 });
 
-// SEARCH logs (Protected)
+// SEARCH logs
 app.get('/api/search', requireAuth, async (req, res) => {
     const { q } = req.query;
     try {
@@ -138,9 +133,10 @@ app.get('/api/search', requireAuth, async (req, res) => {
     }
 });
 
-// Catch-all route to serve React App for any other URL (Important for routing)
+// --- CATCH-ALL ROUTE (Ye SABSE LAST mein hona chahiye) ---
+// Agar upar koi API route match nahi hua, toh React App bhej do
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
