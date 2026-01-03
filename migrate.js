@@ -4,7 +4,7 @@ import pg from 'pg';
 // --- CONFIGURATION ---
 // Yahan wo lamba URL paste karo jo tumne Render ke "Environment Variables" mein daala tha
 // (Neon Dashboard se copy kar sakte ho)
-const NEON_DB_URL = "postgresql://neondb_owner:npg_zPop8N7kRruc@ep-lingering-hat-ah9251wc-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"; 
+const NEON_DB_URL = "postgresql://______________"; 
 
 const SQLITE_FILE = 'database.db'; 
 
